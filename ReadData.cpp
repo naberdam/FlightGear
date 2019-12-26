@@ -21,6 +21,9 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
             if (this->vectorOfDataFromFile.size() == i + 1) {
                 this->vectorOfDataFromFile.resize(2 * (i + 1));
             }
+            if (line == "Print(\"let's = fly\")") {
+                cout << "temp" << endl;
+            }
             line = deleteTabsFromTheBeginningOfTheLine(line);
             line = deleteSpacesFromTheBeginningOfTheLine(line);
             if (isThereVarInStartOfLine(line)) {
@@ -37,9 +40,9 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
                 i++;
                 continue;
             }
-            //if there is '=' in the line that mean we will need to handle with variable
+            //if there is '=' in the line that's mean we will need to handle with variable
             // which we will put in the Interpreter
-            if (isThereEqualSignInText(line) && !isThereOpenSpecialParenthesisInText(line)) {
+            if (isThereEqualSignInText(line) && !isThereOpenSpecialParenthesisInText(line) && !isThereApostrophesInText(line)) {
                 posOfThisLine = line.find(delimiterEqual);
                 tokenOfTextLeft = line.substr(0, posOfThisLine);
                 line.erase(0, posOfThisLine + delimiterEqual.length());
@@ -91,6 +94,16 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
         throw "cant open file";
     }
 
+}
+
+bool ReadData::isThereApostrophesInText(string text) {
+    unsigned int i = 0;
+    for (; i < text.size(); ++i) {
+        if (text[i] == '"') {
+            return true;
+        }
+    }
+    return false;
 }
 
 void ReadData::addArrowSignToTheBegin(std::__cxx11::string text, unsigned int index) {

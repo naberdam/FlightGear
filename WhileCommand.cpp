@@ -8,9 +8,11 @@
 
 int WhileCommand::execute(vector<vector<std::__cxx11::string> > &detailsOfTheCommand, unsigned int index) {
     //we want to pass the vector of "{"
-    unsigned indexToWhile = index + 2;
+    unsigned indexToWhile = index;
+    bool didEnterTheLoop = false;
     StringToCommands *stringToCommands = stringToCommands->getInstanceOfStringToCommands();
     while (this->checkCondition(detailsOfTheCommand, index)) {
+        didEnterTheLoop = true;
         //initialize indexToWhile in each iteration
         indexToWhile = index + 2;
         while (detailsOfTheCommand[indexToWhile][0] != "}") {
@@ -22,11 +24,8 @@ int WhileCommand::execute(vector<vector<std::__cxx11::string> > &detailsOfTheCom
             }
         }
     }
-    //we want to pass the vector of "}"
-    if (detailsOfTheCommand[indexToWhile + 1][0] == "}") {
-        return indexToWhile + 2;
-    }
-    return indexToWhile + 1;
+    return increaseIndexByEnterConditionOrNot(didEnterTheLoop, indexToWhile, detailsOfTheCommand);
+
 }
 
 WhileCommand::WhileCommand() {}

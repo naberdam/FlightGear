@@ -12,14 +12,14 @@
 
 #define SIZE_OF_BUFFER 1024
 
+extern mutex mtx;
+static int client_socket;
 
-
-void updateValueWithXmlFile(char * buffer, vector<string> vectorOfNameValueFromXml) {
+void updateValueWithXmlFile(string bufferString, vector<string> vectorOfNameValueFromXml) {
     VariablesSingelton* variablesSingelton = variablesSingelton->getInstanceOfVariablesSingelton();
     string delimiterOfAllText = ",";
     size_t posOfAllText = 0;
     string tokenOfAllText;
-    string bufferString = variablesSingelton->convertCharArrayToString(buffer);
     unsigned int i = 0;
     while ((posOfAllText = bufferString.find(delimiterOfAllText)) != string::npos) {
         tokenOfAllText = bufferString.substr(0, posOfAllText);
@@ -27,13 +27,14 @@ void updateValueWithXmlFile(char * buffer, vector<string> vectorOfNameValueFromX
         variablesSingelton->updateValueInMapSim(vectorOfNameValueFromXml[i], stof(tokenOfAllText));
         ++i;
     }
+    variablesSingelton->updateValueInMapSim(vectorOfNameValueFromXml[i], stof(bufferString));
 }
 
-void readingFromServer(int & client_socket) {
+void readingFromServer() {
     vector<string> vectorOfNameValue = {"/instrumentation/airspeed-indicator/indicated-speed-kt",
                                         "/sim/time/warp",
                                         "/controls/switches/magnetos",
-                                        "//instrumentation/heading-indicator/offset-deg",
+                                        "/instrumentation/heading-indicator/offset-deg",
                                         "/instrumentation/altimeter/indicated-altitude-ft",
                                         "/instrumentation/altimeter/pressure-alt-ft",
                                         "/instrumentation/attitude-indicator/indicated-pitch-deg",
@@ -67,32 +68,39 @@ void readingFromServer(int & client_socket) {
                                         "/controls/switches/master-alt",
                                         "/engines/engine/rpm"};
     string dataStr;
+    bool weAreConnectingSocket;
     while (true) {
-        char buffer[SIZE_OF_BUFFER];
-        int numBytesRead = read(client_socket, buffer, sizeof(buffer));
-        if (numBytesRead > 0) {
-            for (int i = 0; i < numBytesRead; i++) {
-                char c = buffer[i];
-                if (c == '\n') {
-                    if (dataStr.length() > 0) {
-                        cout << dataStr << endl;
-                        /*VariablesSingelton::getInstanceOfVariablesSingelton()->connectMe();*/
-                        updateValueWithXmlFile(buffer, vectorOfNameValue);
-                        dataStr.clear();
+        mtx.try_lock();
+        weAreConnectingSocket = VariablesSingelton::getInstanceOfVariablesSingelton()->isConnectSocket();
+        mtx.unlock();
+        if (weAreConnectingSocket) {
+            char buffer[SIZE_OF_BUFFER];
+            int numBytesRead = read(client_socket, buffer, sizeof(buffer));
+            if (numBytesRead > 0) {
+                for (int i = 0; i < numBytesRead; i++) {
+                    char c = buffer[i];
+                    if (c == '\n') {
+                        if (dataStr.length() > 0) {
+                            /*mtx.try_lock();
+                            cout << dataStr << endl;
+                            mtx.unlock();*/
+                            updateValueWithXmlFile(dataStr, vectorOfNameValue);
+                            dataStr.clear();
+                        }
+                    } else {
+                        dataStr += c;
                     }
-                } else {
-                    dataStr += c;
                 }
             }
-        } /*else {
+        } else {
             break;
-        }*/
+        }
     }
 
 }
 
 
-void openSocketForDataServerCommand(int &client_socket, string portOfServerString) {
+void openSocketForDataServerCommand(string portOfServerString) {
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1) {
         //error
@@ -140,9 +148,10 @@ void openSocketForDataServerCommand(int &client_socket, string portOfServerStrin
 
 int OpenDataServerCommand::execute(vector<vector<std::__cxx11::string> > &detailsOfTheCommand, unsigned int index) {
     int client_socket;
-    thread t1(openSocketForDataServerCommand, ref(client_socket), detailsOfTheCommand[index][1]);
+    thread t1(openSocketForDataServerCommand, detailsOfTheCommand[index][1]);
     t1.join();
-    thread t2(readingFromServer, ref(client_socket));
+    VariablesSingelton::getInstanceOfVariablesSingelton()->connectMe();
+    thread t2(readingFromServer);
     t2.detach();
     return ++index;
 }

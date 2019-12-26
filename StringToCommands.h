@@ -17,6 +17,7 @@
 #include "EqualCommandWithoutVar.h"
 #include "OpenDataServerCommand.h"
 #include "UnknownFuncCommand.h"
+#include "ConnectClientCommand.h"
 
 #define EX3_STRINGTOCOMMANDS_H
 
@@ -29,6 +30,7 @@ private:
 
     StringToCommands() {
         this->mapOfCommands["openDataServer"] = new OpenDataServerCommand();
+        this->mapOfCommands["connectControlClient"] = new ConnectClientCommand();
         this->mapOfCommands["Print"] = new PrintCommand();
         this->mapOfCommands["Sleep"] = new SleepCommand();
         this->mapOfCommands["var->"] = new VarDefinitionRight();

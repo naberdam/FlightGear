@@ -17,9 +17,18 @@ int PrintCommand::execute(vector<vector<string>> &detailsOfTheCommand, unsigned 
             cout << variablesSingelton->getValueFromSetVariablesOfInterpreter(detailsOfTheCommand[index][1]) << endl;
             mtx.unlock();
         } else {
-            mtx.try_lock();
-            cout << detailsOfTheCommand[index][i] << endl;
-            mtx.unlock();
+            string printString = variablesSingelton->deleteSpacesFromNewSetVariables(detailsOfTheCommand[index][1]);
+            try {
+                mtx.try_lock();
+                //need to check where to print
+                cout << variablesSingelton->getValueFromSetVariablesOfInterpreter(printString) << endl;
+                mtx.unlock();
+            } catch (char const * exp1) {
+                mtx.try_lock();
+                cout << detailsOfTheCommand[index][i] << endl;
+                mtx.unlock();
+            }
+
         }
     }
     return ++index;

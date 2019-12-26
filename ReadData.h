@@ -27,6 +27,7 @@ public:
     bool isThereEqualSignInText(string text);
     bool isThereOpenSpecialParenthesisInText(string text);
     bool isThereCloseSpecialParenthesisInText(string text);
+    bool isThereApostrophesInText(string text);
     string deleteSpacesBetweenExpressions(string text);
     string deleteSpacesFromTheBeginningOfTheLine(string text);
     string deleteTabsFromTheBeginningOfTheLine(string text);

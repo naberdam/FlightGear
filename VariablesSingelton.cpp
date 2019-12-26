@@ -38,21 +38,30 @@ bool VariablesSingelton::doIHaveThisVarInMapRight(std::__cxx11::string nameOfVar
     return false;
 }
 
-Var *VariablesSingelton::doIHaveThisVarInMapBySim(std::__cxx11::string nameOfVar, std::__cxx11::string simAddress) {
-    auto i = this->mapOfSimToValue.begin();
-    for (; i != this->mapOfSimToValue.end(); i++) {
-        if (!i->second->getSim().compare(simAddress) && !i->first.compare(nameOfVar)) {
-            return i->second;
+void VariablesSingelton::setVariableInInterpreterWhenReceiveFromServer(std::__cxx11::string simAddress, float value) {
+    auto i = this->mapOfVarRight.begin();
+    for (; i != this->mapOfVarRight.end(); i++) {
+        if (!i->second->getSim().compare(simAddress)) {
+            setNewVariableToInterpreterWithStringString(i->first, to_string(value));
+            return;
         }
     }
-    return nullptr;
+    auto item = this->mapOfVarLeft.begin();
+    for (; item != this->mapOfVarLeft.end(); item++) {
+        if (!item->second->getSim().compare(simAddress)) {
+            setNewVariableToInterpreterWithStringString(item->first, to_string(value));
+            return;
+        }
+    }
 }
 
 void VariablesSingelton::addVariableToInterpreter(std::__cxx11::string nameOfVar, std::__cxx11::string value) {
     Expression *expression;
     double valueFromString;
     try {
+        mtx.try_lock();
         expression = this->interpreter->interpret(value);
+        mtx.unlock();
         valueFromString = expression->calculate();
         //set variables for next time we use interpreter
         setNewVariableToInterpreterWithStringDouble(nameOfVar, valueFromString);
@@ -69,10 +78,11 @@ void VariablesSingelton::addVariableToInterpreter(std::__cxx11::string nameOfVar
 }
 
 void VariablesSingelton::setMapLeftOfVarByValue(std::__cxx11::string nameOfVar, string value) {
-    /* need to handle with update of server/client*/
     Expression *expression;
     double valueFromString;
+    mtx.try_lock();
     expression = this->interpreter->interpret(value);
+    mtx.unlock();
     valueFromString = expression->calculate();
     if (doIHaveThisVarInMapLeft(nameOfVar)) {
         mtx.try_lock();
@@ -87,14 +97,21 @@ void VariablesSingelton::setMapLeftOfVarByValue(std::__cxx11::string nameOfVar, 
 }
 
 void VariablesSingelton::setMapRightOfVarByValue(std::__cxx11::string nameOfVar, string value) {
-    /* need to handle with update of server/client*/
     Expression *expression;
     double valueFromString;
+    mtx.try_lock();
     expression = this->interpreter->interpret(value);
+    mtx.unlock();
     valueFromString = expression->calculate();
     if (doIHaveThisVarInMapRight(nameOfVar)) {
         mtx.try_lock();
+        string simToMsg = this->mapOfVarRight[nameOfVar]->getSim().substr(1);
+        mtx.unlock();
+        mtx.try_lock();
         this->mapOfVarRight[nameOfVar]->setValue(valueFromString);
+        mtx.unlock();
+        mtx.try_lock();
+        msgForClient.push("set " + simToMsg + " " + convertDoubleValueToStringForSetVariables(valueFromString) + "\r\n");
         mtx.unlock();
     }
     //set variables for next time we use interpreter
@@ -102,6 +119,24 @@ void VariablesSingelton::setMapRightOfVarByValue(std::__cxx11::string nameOfVar,
     if (expression) {
         delete expression;
     }
+}
+
+string VariablesSingelton::getMsgFromQueue() {
+    string msg;
+    if (!this->msgForClient.empty()) {
+        mtx.try_lock();
+        msg = this->msgForClient.front();
+        mtx.unlock();
+        mtx.try_lock();
+        this->msgForClient.pop();
+        mtx.unlock();
+        return msg;
+    }
+    return "";
+}
+
+bool VariablesSingelton::queueWithMsg() {
+    return !this->msgForClient.empty();
 }
 
 void VariablesSingelton::setNewVariableToInterpreterWithStringDouble(std::__cxx11::string nameOfVar, double valueFromString) {
@@ -224,18 +259,26 @@ VariablesSingelton::~VariablesSingelton() {
 }
 
 bool VariablesSingelton::isThisStringIsInInterpreter(std::__cxx11::string nameOfVar) {
-    return this->interpreter->isThisStringIsVariableOrJustString(nameOfVar);
+    mtx.try_lock();
+    bool valueOrString = this->interpreter->isThisStringIsVariableOrJustString(nameOfVar);
+    mtx.unlock();
+    return valueOrString;
 }
 
 double VariablesSingelton::getValueFromSetVariablesOfInterpreter(std::__cxx11::string nameOfVar) {
-    return stod(this->interpreter->getValueOfVariable(nameOfVar));
+    mtx.try_lock();
+    double stringToDouble = stod(this->interpreter->getValueOfVariable(nameOfVar));
+    mtx.unlock();
+    return stringToDouble;
 }
 
 double VariablesSingelton::calculateStringInInterpret(std::__cxx11::string valueString) {
     valueString = deleteSpacesFromNewSetVariables(valueString);
     Expression* expression;
     double numberOfString;
+    mtx.try_lock();
     expression = this->interpreter->interpret(valueString);
+    mtx.unlock();
     numberOfString = expression->calculate();
     delete expression;
     return numberOfString;
@@ -253,11 +296,28 @@ void VariablesSingelton::updateValueInMapSim(string sim, float value) {
     mtx.try_lock();
     this->mapOfSimToValue[sim]->setFloatValue(value);
     mtx.unlock();
+    setVariableInInterpreterWhenReceiveFromServer(sim, value);
 }
 
 void VariablesSingelton::printValuesInSim() {
     for(auto item = this->mapOfSimToValue.begin(); item != this->mapOfSimToValue.end(); ++item) {
         cout << item->second->getSim() << item->second->getValue() << endl;
     }
+}
+
+volatile bool VariablesSingelton::isConnectSocket() const {
+    return connectSocket;
+}
+
+void VariablesSingelton::disconnectMe() {
+    mtx.try_lock();
+    this->connectSocket = false;
+    mtx.unlock();
+}
+
+void VariablesSingelton::connectMe() {
+    mtx.try_lock();
+    this->connectSocket = true;
+    mtx.unlock();
 }
 

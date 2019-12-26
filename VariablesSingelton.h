@@ -21,18 +21,17 @@ private:
     unordered_map<string, Var *> mapOfVarRight;
     unordered_map<string, Var *> mapOfVarLeft;
     unordered_map<string, Var * > mapOfSimToValue;
-    thread serverThread;
+    queue<string> msgForClient;
 
     volatile bool connectSocket;
     static VariablesSingelton *instance;
 
     VariablesSingelton() {
         this->interpreter = new Interpreter();
-        this->connectSocket = true;
         addToMapSimToValue("/instrumentation/airspeed-indicator/indicated-speed-kt", 0);
         addToMapSimToValue("/sim/time/warp", 0);
         addToMapSimToValue("/controls/switches/magnetos", 0);
-        addToMapSimToValue("//instrumentation/heading-indicator/offset-deg", 0);
+        addToMapSimToValue("/instrumentation/heading-indicator/offset-deg", 0);
         addToMapSimToValue("/instrumentation/altimeter/indicated-altitude-ft", 0);
         addToMapSimToValue("/instrumentation/altimeter/pressure-alt-ft", 0);
         addToMapSimToValue("/instrumentation/attitude-indicator/indicated-pitch-deg", 0);
@@ -81,7 +80,7 @@ public:
 
     bool doIHaveThisVarInMapRight(string nameOfVar);
 
-    Var *doIHaveThisVarInMapBySim(string nameOfVar, string simAddress);
+    void setVariableInInterpreterWhenReceiveFromServer(string simAddress, float value);
 
     /*void updateValueWithXmlFile(char *buffer, vector<string> vectorOfNameValueFromXml);*/
 
@@ -124,11 +123,14 @@ public:
     void addToMapSimToValue(string sim, float value);
 
     void updateValueInMapSim(string sim, float value);
-    void connectMe() {
-        this->connectSocket = true;
-    }
+    void connectMe();
+    void disconnectMe();
+
+    volatile bool isConnectSocket() const;
 
     void printValuesInSim();
+    string getMsgFromQueue();
+    bool queueWithMsg();
 
 
     virtual ~VariablesSingelton();

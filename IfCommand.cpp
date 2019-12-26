@@ -3,22 +3,25 @@
 //
 
 #include "IfCommand.h"
+#include "StringToCommands.h"
 
 int IfCommand::execute(vector<vector<std::__cxx11::string> > &detailsOfTheCommand, unsigned int index) {
-    //we want to pass the vector of "{"
-    unsigned indexToIf = index + 2;
+    unsigned indexToIf = index;
+    bool didEnterTheLoop = false;
     if (this->checkCondition(detailsOfTheCommand, index)) {
+        didEnterTheLoop = true;
         //initialize indexToIf in each iteration
         indexToIf = index + 2;
-        while (detailsOfTheCommand[index][indexToIf] != "}") {
-            indexToIf = this->command->execute(detailsOfTheCommand, indexToIf);
+        while (detailsOfTheCommand[indexToIf][0] != "}") {
+            this->command = StringToCommands::getInstanceOfStringToCommands()->getCommandFromMapOfCommandsByString(detailsOfTheCommand[indexToIf][0]);
+            if (this->command) {
+                indexToIf = this->command->execute(detailsOfTheCommand, indexToIf);
+            } else {
+                ++indexToIf;
+            }
         }
     }
-    //we want to pass the vector of "}"
-    if (detailsOfTheCommand[indexToIf + 1][0] == "}") {
-        return indexToIf + 2;
-    }
-    return indexToIf + 1;
+    return increaseIndexByEnterConditionOrNot(didEnterTheLoop, indexToIf, detailsOfTheCommand);
 }
 
 IfCommand::IfCommand() {}

@@ -152,7 +152,13 @@ bool Interpreter::isThisStringIsVariableOrJustString(std::__cxx11::string nameOf
 }
 
 string Interpreter::getValueOfVariable(std::__cxx11::string nameOfVar) {
+    string valueWithoutParanthesis;
     if (this->valuesOfVariables.count(nameOfVar)) {
+        if (this->valuesOfVariables[nameOfVar][0] == '(') {
+            valueWithoutParanthesis = this->valuesOfVariables[nameOfVar].substr(1);
+            valueWithoutParanthesis = valueWithoutParanthesis.substr(0, valueWithoutParanthesis.size() - 1);
+            return valueWithoutParanthesis;
+        }
         return this->valuesOfVariables[nameOfVar];
     }
     throw "error in getValueOfVariable";
@@ -203,12 +209,19 @@ void Interpreter::orderMapByValuesAndVariables(string tokenOfAllText) {
     size_t posOfSmallText;
     posOfSmallText = tokenOfAllText.find(delimiterOfSmallText);
     tokenOfSmallTextLeft = tokenOfAllText.substr(0, posOfSmallText);
+    string valueVariableIfValueIsMinus;
     if (strcmp(tokenOfAllText.c_str(), tokenOfSmallTextLeft.c_str())) {
         tokenOfAllText.erase(0, posOfSmallText + delimiterOfSmallText.length());
         posOfSmallText = tokenOfAllText.find(delimiterOfSmallText);
         tokenOfSmallTextRight = tokenOfAllText.substr(0, posOfSmallText);
         if (tokenOfSmallTextRight != "" && tokenOfSmallTextLeft != "") {
             if (isLetter(tokenOfSmallTextLeft) && isNumberString(tokenOfSmallTextRight)) {
+                if (tokenOfSmallTextRight[0] == '-') {
+                    valueVariableIfValueIsMinus = "(";
+                    valueVariableIfValueIsMinus += tokenOfSmallTextRight;
+                    valueVariableIfValueIsMinus += ")";
+                    tokenOfSmallTextRight = valueVariableIfValueIsMinus;
+                }
                 if (valuesOfVariables.find(tokenOfSmallTextLeft) == valuesOfVariables.end()) {
                     valuesOfVariables.insert(pair<string, string>(tokenOfSmallTextLeft, tokenOfSmallTextRight));
                 } else {
@@ -381,6 +394,9 @@ Expression *Interpreter::interpret(string exp) {
                 while (priorityOfOperators(exp[i], topStackOperator) && !stackOperators.empty() && exp[i] != ')') {
                     queuePolish.push(stackOperators.top());
                     stackOperators.pop();
+                    if  (stackOperators.empty()) {
+                        break;
+                    }
                     topStackOperator = stackOperators.top();
                 }
             }
@@ -536,7 +552,9 @@ Expression *Interpreter::binaryCalculate(Expression *firstExpression, Expression
 }*/
 
 bool Interpreter::priorityOfOperators(char outStack, string inStack) {
-    return ((outStack == '+' || outStack == '-') && (inStack == "*" || inStack == "/"));
+    return ((outStack == '+' || outStack == '-') && (inStack == "*" || inStack == "/"))
+           || (outStack == '+' && inStack == "-")
+           || (outStack == '-' && inStack == "+");
 }
 
 bool Interpreter::isOperator(char character) {

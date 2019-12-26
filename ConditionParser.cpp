@@ -6,7 +6,6 @@
 #include "ConditionParser.h"
 
 
-
 bool ConditionParser::checkCondition(vector<vector<std::__cxx11::string> > detailsOfTheCommand, unsigned int index) {
     unsigned int indexOfOperator = findIndexOfOperator(detailsOfTheCommand[index]);
     if (indexOfOperator == -1) {
@@ -18,25 +17,63 @@ bool ConditionParser::checkCondition(vector<vector<std::__cxx11::string> > detai
     double numberOfLeftSideOfCondition, numberOfRightSideOfCondition;
     numberOfLeftSideOfCondition = interpretStringAndCalculateIt(leftSideOfCondition);
     numberOfRightSideOfCondition = interpretStringAndCalculateIt(rightSideOfCondition);
+    leftSideOfCondition = to_string(numberOfLeftSideOfCondition);
+    rightSideOfCondition = to_string(numberOfRightSideOfCondition);
     if (operatorBetweenSidesOfCondition == "==") {
-        return numberOfLeftSideOfCondition == numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) == to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition == numberOfRightSideOfCondition);
     }
     if (operatorBetweenSidesOfCondition == "<=") {
-        return numberOfLeftSideOfCondition <= numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) <= to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition <= numberOfRightSideOfCondition);
     }
     if (operatorBetweenSidesOfCondition == ">=") {
-        return numberOfLeftSideOfCondition >= numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) >= to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition >= numberOfRightSideOfCondition);
     }
     if (operatorBetweenSidesOfCondition == ">") {
-        return numberOfLeftSideOfCondition > numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) > to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition > numberOfRightSideOfCondition);
     }
     if (operatorBetweenSidesOfCondition == "<") {
-        return numberOfLeftSideOfCondition < numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) < to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition < numberOfRightSideOfCondition);
     }
     if (operatorBetweenSidesOfCondition == "!=") {
-        return numberOfLeftSideOfCondition != numberOfRightSideOfCondition;
+        return to_string(numberOfLeftSideOfCondition) != to_string(numberOfRightSideOfCondition)
+               || (numberOfLeftSideOfCondition != numberOfRightSideOfCondition);
     }
 
+
+}
+
+int ConditionParser::increaseIndexByEnterConditionOrNot(bool didEnterTheLoop, unsigned int index,
+                                                        vector<vector<string>> &detailsOfTheCommand) {
+    if (didEnterTheLoop) {
+        //we want to pass the vector of "}"
+        if (detailsOfTheCommand[index + 1][0] == "}") {
+            return index + 2;
+        }
+        return index + 1;
+    } else {
+        unsigned int i = index + 2;
+        unsigned int j = 1;
+        unsigned k;
+        int countSpecialParenthesis = 1;
+        while (countSpecialParenthesis) {
+            if (detailsOfTheCommand[i][0] == "{") {
+                countSpecialParenthesis++;
+            } else if (detailsOfTheCommand[i][0] == "}" && countSpecialParenthesis == 1) {
+                i++;
+                break;
+            } else if (detailsOfTheCommand[i][0] == "}") {
+                countSpecialParenthesis--;
+            }
+            j++;
+            i++;
+        }
+        return i;
+    }
 }
 
 string ConditionParser::deleteOpenParanthesis(std::__cxx11::string text) {
@@ -46,7 +83,7 @@ string ConditionParser::deleteOpenParanthesis(std::__cxx11::string text) {
     for (; i < text.size(); ++i) {
         if (text[i] == '(') {
             ++countOpen;
-        } else if (text [i] == ')') {
+        } else if (text[i] == ')') {
             ++countClose;
         }
     }
@@ -61,7 +98,7 @@ string ConditionParser::deleteOpenParanthesis(std::__cxx11::string text) {
 }
 
 double ConditionParser::interpretStringAndCalculateIt(std::__cxx11::string nameOfVar) {
-    VariablesSingelton* variablesSingelton = variablesSingelton->getInstanceOfVariablesSingelton();
+    VariablesSingelton *variablesSingelton = variablesSingelton->getInstanceOfVariablesSingelton();
     return variablesSingelton->calculateStringInInterpret(nameOfVar);
 }
 
@@ -85,11 +122,12 @@ unsigned int ConditionParser::findIndexOfOperator(vector<std::__cxx11::string> d
     return i;
 }
 
-string ConditionParser::unionAllStringsTillOperator(vector<std::__cxx11::string> detailsOfCondition, unsigned int indexOfOperator) {
+string ConditionParser::unionAllStringsTillOperator(vector<std::__cxx11::string> detailsOfCondition,
+                                                    unsigned int indexOfOperator) {
     unsigned int i = 1;
     unsigned int j = 0;
     string newLeftCondition, withoutSpaces;
-    for (; i != indexOfOperator ; ++i) {
+    for (; i != indexOfOperator; ++i) {
         for (; j < detailsOfCondition[i].size(); ++j) {
             if (detailsOfCondition[i][j] == ' ') {
                 continue;
@@ -102,11 +140,12 @@ string ConditionParser::unionAllStringsTillOperator(vector<std::__cxx11::string>
     return newLeftCondition;
 }
 
-string ConditionParser::unionAllStringsFromOperatorTillEnd(vector<std::__cxx11::string> detailsOfCondition, unsigned int indexOfOperator) {
+string ConditionParser::unionAllStringsFromOperatorTillEnd(vector<std::__cxx11::string> detailsOfCondition,
+                                                           unsigned int indexOfOperator) {
     unsigned int i = indexOfOperator + 1;
     unsigned int j = 0;
     string newRightCondition, withoutSpaces;
-    for (; i < detailsOfCondition.size() ; ++i) {
+    for (; i < detailsOfCondition.size(); ++i) {
         for (; j < detailsOfCondition[i].size(); ++j) {
             if (detailsOfCondition[i][j] == ' ') {
                 continue;
