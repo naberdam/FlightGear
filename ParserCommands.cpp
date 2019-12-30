@@ -19,7 +19,7 @@ void ParserCommands::parser(vector<vector<std::__cxx11::string> > lexerVector) {
             try {
                 index = command->execute(lexerVector, index);
             } catch (char const * exc1) {
-                cout << "error in parser" << endl;
+                cout << exc1 << endl;
                 index++;
             }
         }

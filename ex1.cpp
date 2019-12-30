@@ -130,9 +130,11 @@ double UMinus::calculate() {
 }
 
 bool Interpreter::isLetter(string token) {
+    //check if there is illegal letter in first char
     if ((token[0] < 'a' || token[0] > 'z') && (token[0] < 'A' || token[0] > 'Z') && token[0] != '_') {
         return false;
     }
+    //check other chars in token if they are legal
     for (int i = 1; i < (int) token.size(); i++) {
         if ((token[i] < 'a' || token[i] > 'z') && (token[i] < 'A' || token[i] > 'Z') && token[i] != '_' &&
             (token[i] < '0' || token[i] > '9')) {
@@ -143,50 +145,74 @@ bool Interpreter::isLetter(string token) {
 }
 
 bool Interpreter::isThisStringIsVariableOrJustString(std::__cxx11::string nameOfVar) {
+    //first, check if the map is empty
     if (this->valuesOfVariables.empty()) {
         return false;
     }
+    //check if we have this name of var in our map
     if (this->valuesOfVariables.count(nameOfVar)) {
         return true;
     }
+    return false;
 }
 
 string Interpreter::getValueOfVariable(std::__cxx11::string nameOfVar) {
     string valueWithoutParanthesis;
     if (this->valuesOfVariables.count(nameOfVar)) {
+        //check if the value of nameOfVar is negative and it has parenthesis
         if (this->valuesOfVariables[nameOfVar][0] == '(') {
+            //delete parenthesis
             valueWithoutParanthesis = this->valuesOfVariables[nameOfVar].substr(1);
             valueWithoutParanthesis = valueWithoutParanthesis.substr(0, valueWithoutParanthesis.size() - 1);
             return valueWithoutParanthesis;
         }
+        //else - positive value
         return this->valuesOfVariables[nameOfVar];
     }
     throw "error in getValueOfVariable";
 }
 
 bool Interpreter::isLetterChar(char stringCheck) {
+    //letter between a to z
     if (stringCheck >= 'a' && stringCheck <= 'z') {
         return 1;
     }
+    //letter between A to Z
     if (stringCheck >= 'A' && stringCheck <= 'Z') {
         return 1;
     }
     if (stringCheck == '_') {
         return 1;
     }
+    //else = it is illegal
     return 0;
 }
 
 bool Interpreter::isNumberString(string number) {
+    //this boolean tells us if we already have number and we can use '.'
     bool isTheNumberCanBeGood = false;
+    //this boolean tells us if we already have '.'
+    bool alreadyHadPoint = false;
     for (int i = 0; (unsigned) i < number.size(); ++i) {
+        //negative number
         if (i == 0 && number[i] == '-') {
             continue;
         }
+        //the letter is not a number
         if (!isNumberChar(number[i])) {
             return 0;
         }
+        //the first '.' and the string we have till now is good
+        if (number[i] == '.' && !alreadyHadPoint && isTheNumberCanBeGood) {
+            alreadyHadPoint = true;
+            continue;
+        }
+        //it is not a correct number
         if (!isTheNumberCanBeGood && number[i] == '.') {
+            return 0;
+        }
+        //it is not a correct number because we already have one '.'
+        if (alreadyHadPoint && number[i] == '.') {
             return 0;
         }
         isTheNumberCanBeGood = true;
@@ -198,6 +224,7 @@ bool Interpreter::isNumberString(string number) {
 }
 
 bool Interpreter::checkProperString(string stringCheck) {
+    //check if the string is not empty
     if (stringCheck.empty() || !strcmp(stringCheck.c_str(), "")) {
         throw "the string is empty";
     }
@@ -208,29 +235,38 @@ void Interpreter::orderMapByValuesAndVariables(string tokenOfAllText) {
     string tokenOfSmallTextLeft, tokenOfSmallTextRight, delimiterOfSmallText = "=";
     size_t posOfSmallText;
     posOfSmallText = tokenOfAllText.find(delimiterOfSmallText);
+    //tokenOfSmallTextLeft is the variable
     tokenOfSmallTextLeft = tokenOfAllText.substr(0, posOfSmallText);
     string valueVariableIfValueIsMinus;
+    //check is the variable and the value are not equal
     if (strcmp(tokenOfAllText.c_str(), tokenOfSmallTextLeft.c_str())) {
         tokenOfAllText.erase(0, posOfSmallText + delimiterOfSmallText.length());
         posOfSmallText = tokenOfAllText.find(delimiterOfSmallText);
+        //tokenOfSmallTextRight is the value
         tokenOfSmallTextRight = tokenOfAllText.substr(0, posOfSmallText);
+        //check the variable and value are not empty
         if (tokenOfSmallTextRight != "" && tokenOfSmallTextLeft != "") {
+            //check proper variable and value
             if (isLetter(tokenOfSmallTextLeft) && isNumberString(tokenOfSmallTextRight)) {
+                //if it is a negative number, we want to put parenthesis
                 if (tokenOfSmallTextRight[0] == '-') {
                     valueVariableIfValueIsMinus = "(";
                     valueVariableIfValueIsMinus += tokenOfSmallTextRight;
                     valueVariableIfValueIsMinus += ")";
                     tokenOfSmallTextRight = valueVariableIfValueIsMinus;
                 }
+                //checking if we have this variable already in our map
                 if (valuesOfVariables.find(tokenOfSmallTextLeft) == valuesOfVariables.end()) {
                     valuesOfVariables.insert(pair<string, string>(tokenOfSmallTextLeft, tokenOfSmallTextRight));
                 } else {
                     valuesOfVariables[tokenOfSmallTextLeft] = tokenOfSmallTextRight;
                 }
+                //one of them is empty
             } else {
                 throw "the string is not correct - 1";
             }
         }
+        //if the variable and value are equal so the string is not good and we need to throw an exception
     } else {
         throw "the string is not correct - 2";
     }
@@ -239,29 +275,18 @@ void Interpreter::orderMapByValuesAndVariables(string tokenOfAllText) {
 void Interpreter::setVariables(string variablesValue) {
     //the basic of this function is from stackoverflow
     checkProperString(variablesValue);
-    /*try {
-    }
-    catch (exception excp1) {
-        cout << "the string is empty" << endl;
-    }*/
     string delimiterOfAllText = ";", delimiterOfSmallText = "=";
     size_t posOfAllText = 0;
     string tokenOfAllText;
+    //iterations on variablesValue so can update our map of variables
     while ((posOfAllText = variablesValue.find(delimiterOfAllText)) != string::npos) {
         tokenOfAllText = variablesValue.substr(0, posOfAllText);
         variablesValue.erase(0, posOfAllText + delimiterOfAllText.length());
+        //send to the function expression that contains variable '=' value
         orderMapByValuesAndVariables(tokenOfAllText);
-        /*try {
-        } catch (exception excp2) {
-            cout << "error: variables are not correct" << endl;
-        }*/
     }
+    //for the last text
     orderMapByValuesAndVariables(variablesValue);
-    /*try {
-    } catch (exception excp3) {
-        cout << "error: variables are not correct" << endl;
-    }*/
-
 }
 
 //this function has been taken from stackoverflow
@@ -281,11 +306,6 @@ string Interpreter::replaceAll(string *str, const string &from, const string &to
 bool Interpreter::checkProperReplaceVariables(string stringCheck) {
     for (int i = 0; (unsigned) i < stringCheck.size(); i++) {
         checkProperEquation(stringCheck, i);
-        /*try {
-
-        } catch (exception excp5) {
-            cout << "the equation is not correct" << endl;
-        }*/
     }
     return 1;
 }
@@ -300,22 +320,19 @@ Expression *Interpreter::interpret(string exp) {
     bool isNumberOrNot = 0;
     char checkUminusOrMinus = 32, checkUplusOrPlus = 32;
     string number, operatorToStack;
+    //replace all variables in equation with their values
     if (!valuesOfVariables.empty()) {
         for (map<string, string>::iterator it = valuesOfVariables.begin(); it != valuesOfVariables.end(); it++) {
             replaceAll((&exp), string(it->first), string(it->second));
         }
     }
+    //if there is letter so it is not a good equation
     checkProperReplaceVariables(exp);
+    //check if every open parenthesis there is close parenthesis
     checkProperParenthesis(exp);
     while (exp.size() > 0) {
         checkProperEquation(exp, i);
-        /*try {
-        }
-        catch (exception excp3) {
-            cout << "the equation is not correct - 2" << endl;
-            delete this;
-            exit(1);
-        }*/
+        //while we have number so we want to save those chars in 'number'
         while (isNumberChar(exp[i])) {
             number += exp[i];
             checkUminusOrMinus = exp[i];
@@ -323,10 +340,16 @@ Expression *Interpreter::interpret(string exp) {
             exp = exp.substr(i + 1, exp.size());
             isNumberOrNot = 1;
         }
+        //is it is a number so we want to insert 'number' to queuePolish
         if (isNumberOrNot) {
-            queuePolish.push(number);
-            number.clear();
-            isNumberOrNot = 0;
+            //check proper number
+            if (isNumberString(number)) {
+                queuePolish.push(number);
+                number.clear();
+                isNumberOrNot = 0;
+            } else {
+                throw "the equation is not good";
+            }
         }
         if (exp[i] == '(') {
             operatorToStack += exp[i];
@@ -335,19 +358,23 @@ Expression *Interpreter::interpret(string exp) {
             checkUminusOrMinus = exp[i];
             checkUplusOrPlus = exp[i];
             exp = exp.substr(i + 1, exp.size());
+            //check if after the '(' we have '-', so we save him in 'number' because it is a negative number or Uminus
             if (exp[i] == '-' && exp[i + 1] != '(') {
                 number += exp[i];
+                //erase '-' from exp
                 exp = exp.substr(i + 1, exp.size());
             }
             continue;
         }
         if (isOperator(exp[i])) {
+            //Uminus
             if (exp[i] == '-' && exp[i + 1] == '(' && !isNumberChar(checkUminusOrMinus) && checkUplusOrPlus != ')') {
                 Interpreter *i1 = new Interpreter();
                 exp = exp.substr(i + 1, exp.size());
                 string temp;
                 int j = i;
                 int countParenthesisOfUminus = 1;
+                //create temp with the expression between the open parenthesis to the close parenthesis
                 while (countParenthesisOfUminus) {
                     temp += exp[j + 1];
                     j++;
@@ -357,33 +384,24 @@ Expression *Interpreter::interpret(string exp) {
                         countParenthesisOfUminus--;
                     }
                 }
+                //recursive on the expression between the open parenthesis to the close parenthesis
                 Expression *e4 = i1->interpret(temp);
                 firstTemp = new UMinus(e4);
                 queueUMinus.push(firstTemp);
                 //a sign for me that there is expression i need to handle
                 queuePolish.push("#");
+                //erase temp from exp because we handle it already and we have it in queueUMinus
                 exp = exp.substr(i + j + 2, exp.size());
                 checkUplusOrPlus = ')';
                 delete i1;
                 continue;
             }
+            //UPlus
             if (exp[i] == '+' && exp[i + 1] == '(' && !isNumberChar(checkUplusOrPlus) && checkUplusOrPlus != ')') {
                 exp = exp.substr(i + 1, exp.size());
-                string temp;
-                int j = i;
-                int countParenthesisOfUplus = 1;
-                while (countParenthesisOfUplus) {
-                    temp += exp[j + 1];
-                    j++;
-                    if (exp[j] == '(') {
-                        countParenthesisOfUplus++;
-                    } else if (exp[j + 1] == ')') {
-                        countParenthesisOfUplus--;
-                    }
-                }
-                exp = temp;
                 continue;
             }
+            //negative number without open parenthesis before
             if (exp[i] == '-' && isNumberChar(exp[i + 1]) && checkUminusOrMinus == 32) {
                 number += exp[i];
                 exp = exp.substr(i + 1, exp.size());
@@ -391,6 +409,7 @@ Expression *Interpreter::interpret(string exp) {
             }
             if (!stackOperators.empty()) {
                 string topStackOperator = stackOperators.top();
+                //pop operators by calculation priority
                 while (priorityOfOperators(exp[i], topStackOperator) && !stackOperators.empty() && exp[i] != ')') {
                     queuePolish.push(stackOperators.top());
                     stackOperators.pop();
@@ -408,6 +427,7 @@ Expression *Interpreter::interpret(string exp) {
             continue;
         }
         if (exp[i] == ')') {
+            //pop all operators till we have ')'
             while (!stackOperators.empty() && stackOperators.top() != "(") {
                 queuePolish.push(stackOperators.top());
                 stackOperators.pop();
@@ -428,7 +448,7 @@ Expression *Interpreter::interpret(string exp) {
     Value *valueQueue;
     while (!queuePolish.empty()) {
         while (!queuePolish.empty() && !isOperator(queuePolish.front())) {
-            //if we need to use firstTemp
+            //if we need to use firstTemp/queueUMinus
             if (!strcmp(queuePolish.front().c_str(), "#")) {
                 stackExpressions.push(queueUMinus.front());
                 queueUMinus.pop();
@@ -446,18 +466,12 @@ Expression *Interpreter::interpret(string exp) {
             }
             firstNumber = stackExpressions.top();
             stackExpressions.pop();
+            //push new binary operator with two numbers and operator we got from queuePolish
             stackExpressions.push(binaryCalculate(firstNumber, secondNumber, queuePolish.front()));
             queuePolish.pop();
         }
     }
     checkProperStack(stackExpressions);
-    /*try {
-    }
-    catch (exception excp1) {
-        cout << "the expression is not good" << endl;
-        delete this;
-        exit(1);
-    }*/
     return stackExpressions.top();
 }
 
@@ -492,11 +506,13 @@ bool Interpreter::checkProperParenthesis(string stringCheck) {
 
 
 bool Interpreter::checkProperEquation(string charOfExpCheck, unsigned int i) {
+    //not one of the correct possibilities to char in the expression
     if (!isNumberChar(charOfExpCheck[i]) && !isOperator(charOfExpCheck[i]) && charOfExpCheck[i] != '(' &&
         charOfExpCheck[i] != ')') {
         throw "the equation is not correct";
     }
     if (charOfExpCheck.size() > 1) {
+        //two operators one by one
         if (isOperator(charOfExpCheck[i]) && isOperator(charOfExpCheck[i + 1])) {
             throw "the equation is not correct";
         }
@@ -521,6 +537,7 @@ string Interpreter::updateString(string exp, int i, int j, double loadNumber) {
 Expression *Interpreter::binaryCalculate(Expression *firstExpression, Expression *secondExpression,
                                          string operatorCalculation) {
     Expression *calculation{nullptr};
+    //create binary expression by operatorCalculation
     if (operatorCalculation == "+") {
         calculation = new Plus(firstExpression, secondExpression);
     } else if (operatorCalculation == "-") {

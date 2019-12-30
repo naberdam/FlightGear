@@ -23,7 +23,7 @@ private:
     unordered_map<string, Var * > mapOfSimToValue;
     queue<string> msgForClient;
 
-    volatile bool connectSocket;
+    bool connectSocket;
     static VariablesSingelton *instance;
 
     VariablesSingelton() {
@@ -126,7 +126,7 @@ public:
     void connectMe();
     void disconnectMe();
 
-    volatile bool isConnectSocket() const;
+    bool isConnectSocket() const;
 
     void printValuesInSim();
     string getMsgFromQueue();

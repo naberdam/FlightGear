@@ -30,6 +30,7 @@ public:
     string deleteOpenParanthesis(string text);
     int increaseIndexByEnterConditionOrNot(bool didEnterTheLoop, unsigned int index, vector<vector<string>> &detailsOfTheCommand);
 
+    virtual ~ConditionParser();
 
 
 };

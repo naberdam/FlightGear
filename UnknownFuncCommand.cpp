@@ -7,11 +7,12 @@
 
 int UnknownFuncCommand::execute(vector<vector<string> > &detailsOfTheCommand, unsigned int index) {
     vector<vector<string> > detailsOfFuncDeclaration;
+    //nameOfFunc will be in the map of string Commands in StringToCommands for the declaration of func
     string nameOfFunc = detailsOfTheCommand[index][0];
     string varCommand = detailsOfTheCommand[index][1];
     string expression = detailsOfTheCommand[index][2];
+    //add '=' to var so when we will do execute to our vectors, we will know to go VarDefinitionEqual
     varCommand += '=';
-
     detailsOfFuncDeclaration.resize(20);
     detailsOfFuncDeclaration[0].push_back(varCommand);
     detailsOfFuncDeclaration[0].push_back(expression);
@@ -21,13 +22,9 @@ int UnknownFuncCommand::execute(vector<vector<string> > &detailsOfTheCommand, un
     int countSpecialParenthesis = 1;
     while (countSpecialParenthesis) {
         if (detailsOfTheCommand[i][0] == "{") {
-            /*detailsOfFuncDeclaration[j].push_back(detailsOfTheCommand[i][0]);*/
             countSpecialParenthesis++;
-            /*i++;
-            continue;*/
+            //end of specialParenthesis
         } else if (detailsOfTheCommand[i][0] == "}" && countSpecialParenthesis == 1) {
-            /*detailsOfFuncDeclaration[j].push_back(detailsOfTheCommand[i][0]);*/
-            countSpecialParenthesis--;
             i++;
             break;
         } else if (detailsOfTheCommand[i][0] == "}") {
@@ -40,6 +37,7 @@ int UnknownFuncCommand::execute(vector<vector<string> > &detailsOfTheCommand, un
         i++;
     }
     detailsOfFuncDeclaration.resize(j);
+    //add nameOfFunc to map in stringToCommands
     StringToCommands *stringToCommands = stringToCommands->getInstanceOfStringToCommands();
     stringToCommands->addKnownFuncCommandToMap(nameOfFunc, detailsOfFuncDeclaration);
     return i;

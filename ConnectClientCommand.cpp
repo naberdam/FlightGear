@@ -61,8 +61,8 @@ void sendMsgToClient() {
                 if (is_sent == -1) {
                     std::cout<<"Error sending message"<<std::endl;
                 } else {
-                    std::cout<<"Hello message sent to server" <<std::endl;
-                    std::cout<< msgString << std::endl;
+                    /*std::cout<<"Hello message sent to server" <<std::endl;
+                    std::cout<< msgString << std::endl;*/
                 }
             } else {
                 this_thread::sleep_for(chrono::milliseconds(10));

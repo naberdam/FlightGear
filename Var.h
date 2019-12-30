@@ -14,15 +14,15 @@ private:
     string sim;
 public:
 
-    Var(float value, const string &sim);
+    Var(float value1, const string &sim1);
 
     float getValue() const;
 
     const string &getSim() const;
 
-    void setValue(double value);
+    void setValue(double value1);
 
-    void setFloatValue(float value);
+    void setFloatValue(float value1);
 };
 
 

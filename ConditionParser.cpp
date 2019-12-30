@@ -8,9 +8,6 @@
 
 bool ConditionParser::checkCondition(vector<vector<std::__cxx11::string> > detailsOfTheCommand, unsigned int index) {
     unsigned int indexOfOperator = findIndexOfOperator(detailsOfTheCommand[index]);
-    if (indexOfOperator == -1) {
-        return false;
-    }
     string operatorBetweenSidesOfCondition = detailsOfTheCommand[index][indexOfOperator];
     string leftSideOfCondition = unionAllStringsTillOperator(detailsOfTheCommand[index], indexOfOperator);
     string rightSideOfCondition = unionAllStringsFromOperatorTillEnd(detailsOfTheCommand[index], indexOfOperator);
@@ -39,12 +36,9 @@ bool ConditionParser::checkCondition(vector<vector<std::__cxx11::string> > detai
         return to_string(numberOfLeftSideOfCondition) < to_string(numberOfRightSideOfCondition)
                || (numberOfLeftSideOfCondition < numberOfRightSideOfCondition);
     }
-    if (operatorBetweenSidesOfCondition == "!=") {
-        return to_string(numberOfLeftSideOfCondition) != to_string(numberOfRightSideOfCondition)
-               || (numberOfLeftSideOfCondition != numberOfRightSideOfCondition);
-    }
-
-
+    //operatorBetweenSidesOfCondition == "!="
+    return to_string(numberOfLeftSideOfCondition) != to_string(numberOfRightSideOfCondition)
+           || (numberOfLeftSideOfCondition != numberOfRightSideOfCondition);
 }
 
 int ConditionParser::increaseIndexByEnterConditionOrNot(bool didEnterTheLoop, unsigned int index,
@@ -58,7 +52,6 @@ int ConditionParser::increaseIndexByEnterConditionOrNot(bool didEnterTheLoop, un
     } else {
         unsigned int i = index + 2;
         unsigned int j = 1;
-        unsigned k;
         int countSpecialParenthesis = 1;
         while (countSpecialParenthesis) {
             if (detailsOfTheCommand[i][0] == "{") {
@@ -159,3 +152,5 @@ string ConditionParser::unionAllStringsFromOperatorTillEnd(vector<std::__cxx11::
 }
 
 ConditionParser::ConditionParser() {}
+
+ConditionParser::~ConditionParser() {}

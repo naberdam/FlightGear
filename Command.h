@@ -14,6 +14,8 @@ class Command {
 public:
     virtual int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) = 0;
 
+    virtual ~Command() {}
+
 };
 
 

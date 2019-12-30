@@ -35,7 +35,7 @@ public:
     void addEqualSignToTheBegin(string text, unsigned int index);
     void addArrowSignToTheBegin(string text, unsigned int index);
     string switchFirstOpenParenthesisToSpace(string text);
-    string switchLastCloseParenthesisToSpace(string text);
+    /*string switchLastCloseParenthesisToSpace(string text);*/
 
     bool isThereVarInStartOfLine(string text);
     unsigned int countSpacesInText(string text);

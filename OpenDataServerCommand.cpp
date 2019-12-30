@@ -81,9 +81,6 @@ void readingFromServer() {
                     char c = buffer[i];
                     if (c == '\n') {
                         if (dataStr.length() > 0) {
-                            /*mtx.try_lock();
-                            cout << dataStr << endl;
-                            mtx.unlock();*/
                             updateValueWithXmlFile(dataStr, vectorOfNameValue);
                             dataStr.clear();
                         }
@@ -129,9 +126,9 @@ void openSocketForDataServerCommand(string portOfServerString) {
     if (listen(socketfd, 5) == -1) { //can also set to SOMAXCON (max connections)
         /*std::cerr << "Error during listening command" << std::endl;*/
         throw "Error during listening command";
-    } else {
+    }/* else {
         std::cout << "Server is now listening ..." << std::endl;
-    }
+    }*/
 
     // accepting a client
     client_socket = accept(socketfd, (struct sockaddr *) &address,
@@ -147,7 +144,6 @@ void openSocketForDataServerCommand(string portOfServerString) {
 
 
 int OpenDataServerCommand::execute(vector<vector<std::__cxx11::string> > &detailsOfTheCommand, unsigned int index) {
-    int client_socket;
     thread t1(openSocketForDataServerCommand, detailsOfTheCommand[index][1]);
     t1.join();
     VariablesSingelton::getInstanceOfVariablesSingelton()->connectMe();

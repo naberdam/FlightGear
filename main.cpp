@@ -38,12 +38,6 @@ int main(int argc, char *argv[]) {
     }
     try {
         vector<vector<string>> vec = temp.lexer(argv[2]);
-        for (int i = 0; i < vec.size(); ++i) {
-            for (int j = 0; j < vec[i].size(); ++j) {
-                cout << vec[i][j] << "\t";
-            }
-            cout << "\n";
-        }
         ParserCommands parserCommands = ParserCommands();
         parserCommands.parser(vec);
     } catch (char const * exc1) {

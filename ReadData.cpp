@@ -21,9 +21,6 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
             if (this->vectorOfDataFromFile.size() == i + 1) {
                 this->vectorOfDataFromFile.resize(2 * (i + 1));
             }
-            if (line == "Print(\"let's = fly\")") {
-                cout << "temp" << endl;
-            }
             line = deleteTabsFromTheBeginningOfTheLine(line);
             line = deleteSpacesFromTheBeginningOfTheLine(line);
             if (isThereVarInStartOfLine(line)) {
@@ -112,7 +109,7 @@ void ReadData::addArrowSignToTheBegin(std::__cxx11::string text, unsigned int in
     string newSign = " ";
     string temp1, temp2, newText = "var";
     text.erase(0, 3);
-    for (i; i < text.size(); i++) {
+    for (; i < text.size(); i++) {
         if (text[i] == '-' && text[i + 1] == '>') {
             newSign = "->";
             break;
@@ -136,7 +133,7 @@ void ReadData::addEqualSignToTheBegin(std::__cxx11::string text, unsigned int in
     string newSign = " ";
     string temp1, temp2, newText = "var";
     text.erase(0, 3);
-    for (i; i < text.size(); i++) {
+    for (; i < text.size(); i++) {
         if (text[i] == '=') {
             newSign = "=";
             break;
@@ -266,35 +263,6 @@ string ReadData::switchFirstOpenParenthesisToSpace(string text) {
     return newText;
 }
 
-string ReadData::switchLastCloseParenthesisToSpace(string text) {
-    unsigned int i = text.size() - 1, j = 0;
-    string newText;
-    bool lastCloseParenthesisWasAlready = false;
-    stack<char> stackOfCharsOfTheNewText;
-    for (; i >= 0; --i) {
-        if (!lastCloseParenthesisWasAlready && text[i] == ')') {
-            lastCloseParenthesisWasAlready = true;
-            stackOfCharsOfTheNewText.push(text[i]);
-            continue;
-        }
-        if (!lastCloseParenthesisWasAlready) {
-            if (i == 0) {
-                break;
-            }
-            continue;
-        }
-        stackOfCharsOfTheNewText.push(text[i]);
-    }
-    if (stackOfCharsOfTheNewText.empty()) {
-        return text;
-    }
-    while (!stackOfCharsOfTheNewText.empty()) {
-        newText += stackOfCharsOfTheNewText.top();
-        stackOfCharsOfTheNewText.pop();
-    }
-    return newText;
-}
-
 string ReadData::deleteOpenSpecialParenthesis(string text) {
     unsigned int i = 0;
     string newText;
@@ -356,7 +324,7 @@ void ReadData::orderWithSpaces(string leftTextInLine, unsigned int index) {
     string token;
     size_t posOfThisLine;
     unsigned int howManySpacesInText = countSpacesInText(leftTextInLine);
-    int i;
+    unsigned int i;
     for (i = 0; i < howManySpacesInText; ++i) {
         posOfThisLine = leftTextInLine.find(delimiterSpace);
         token = leftTextInLine.substr(0, posOfThisLine);

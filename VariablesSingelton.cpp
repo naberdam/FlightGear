@@ -68,8 +68,8 @@ void VariablesSingelton::addVariableToInterpreter(std::__cxx11::string nameOfVar
         if (expression) {
             delete expression;
         }
-    } catch (...) {
-        cout << "error with addVariableToInterpreter in VariablesSingelton" << endl;
+    } catch (char const * exc1) {
+        cout << "error with addVariableToInterpreter in VariablesSingelton:" << exc1 << endl;
         if (expression) {
             delete expression;
         }
@@ -300,12 +300,12 @@ void VariablesSingelton::updateValueInMapSim(string sim, float value) {
 }
 
 void VariablesSingelton::printValuesInSim() {
-    for(auto item = this->mapOfSimToValue.begin(); item != this->mapOfSimToValue.end(); ++item) {
+    /*for(auto item = this->mapOfSimToValue.begin(); item != this->mapOfSimToValue.end(); ++item) {
         cout << item->second->getSim() << item->second->getValue() << endl;
-    }
+    }*/
 }
 
-volatile bool VariablesSingelton::isConnectSocket() const {
+bool VariablesSingelton::isConnectSocket() const {
     return connectSocket;
 }
 

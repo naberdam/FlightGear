@@ -13,7 +13,7 @@ private:
     vector<vector<string >> detailsOfFuncDeclaration;
 
 public:
-    KnownFuncCommand(const vector<vector<string>> &detailsOfFuncDeclaration);
+    KnownFuncCommand(const vector<vector<string>> &detailsOfFuncDeclarationFromUnknownFunc);
 
     int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
