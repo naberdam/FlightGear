@@ -101,8 +101,8 @@ void openSocketForDataServerCommand(string portOfServerString) {
     int socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd == -1) {
         //error
-        /*std::cerr << "Could not create a socket" << std::endl;*/
-        throw "Could not create a socket";
+        std::cerr << "Could not create a socket" << std::endl;
+        exit(1);
     }
 
 
@@ -118,14 +118,14 @@ void openSocketForDataServerCommand(string portOfServerString) {
 
     //the actual bind command
     if (bind(socketfd, (struct sockaddr *) &address, sizeof(address)) == -1) {
-        /*std::cerr << "Could not bind the socket to an IP" << std::endl;*/
-        throw "Could not bind the socket to an IP";
+        std::cerr << "Could not bind the socket to an IP" << std::endl;
+        exit(1);
     }
 
     //making socket listen to the port
     if (listen(socketfd, 5) == -1) { //can also set to SOMAXCON (max connections)
-        /*std::cerr << "Error during listening command" << std::endl;*/
-        throw "Error during listening command";
+        std::cerr << "Error during listening command" << std::endl;
+        exit(1);
     }/* else {
         std::cout << "Server is now listening ..." << std::endl;
     }*/
@@ -135,8 +135,8 @@ void openSocketForDataServerCommand(string portOfServerString) {
                            (socklen_t *) &address);
 
     if (client_socket == -1) {
-        /*std::cerr << "Error accepting client" << std::endl;*/
-        throw "Error accepting client";
+        std::cerr << "Error accepting client" << std::endl;
+        exit(1);
     }
 
     close(socketfd); //closing the listening socket

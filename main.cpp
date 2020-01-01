@@ -21,7 +21,7 @@ bool isThisTxtFile(const string txtFile) {
 int main(int argc, char *argv[]) {
     ReadData temp;
     try {
-        if (argc <= 1) {
+        if (argc < 1) {
             throw "error with input main";
         }
     } catch (...) {
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     try {
-        if (!isThisTxtFile(argv[2])) {
+        if (!isThisTxtFile(argv[1])) {
             throw "error with name of fileText";
         }
     } catch (...) {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     try {
-        vector<vector<string>> vec = temp.lexer(argv[2]);
+        vector<vector<string>> vec = temp.lexer(argv[1]);
         ParserCommands parserCommands = ParserCommands();
         parserCommands.parser(vec);
     } catch (char const * exc1) {

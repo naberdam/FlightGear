@@ -177,7 +177,61 @@ string VariablesSingelton::convertDoubleValueToStringForSetVariables(double valu
     ostringstream strs;
     strs << valueFromCalculateExpression;
     string str = strs.str();
+    //check if there is 'e' in number
+    int indexE = locationOfE(str);
+    if (indexE != -1) {
+        //we dont want 'e' to be in number so we change it with the value that hide behind of 'e'
+        str = changeStringToBeWithoutE(str, indexE);
+    }
     return str;
+}
+
+string VariablesSingelton::changeStringToBeWithoutE(string number, int indexE) {
+    string valueOfNumber = number.substr(0,indexE);
+    string e = number.substr(indexE + 1);
+    //initialize the beginning of our new number that supposed to switch 'e'
+    string eAfterChange = "0.";
+    int exponentOfE = stoi(e);
+    //add '0' to the beginning of our new number that supposed to switch 'e'
+    while (exponentOfE != -1) {
+        eAfterChange += '0';
+        ++exponentOfE;
+    }
+    string valueAfterChange;
+    unsigned int j = 0;
+    //we want to keep a boolean that will tell us if it is a negative number or not
+    bool negativeNumber = false;
+    //initialize the number that comes after all the zero
+    for (; j < valueOfNumber.size(); ++j) {
+        if (!negativeNumber && valueOfNumber[j] == '-') {
+            negativeNumber = true;
+            continue;
+        }
+        //we dont want '.' in our value
+        if (valueOfNumber[j] == '.') {
+            continue;
+        }
+        valueAfterChange += valueOfNumber[j];
+    }
+    if (negativeNumber) {
+        string neg = "-";
+        neg += eAfterChange;
+        eAfterChange = neg;
+    }
+    eAfterChange += valueOfNumber;
+    return eAfterChange;
+}
+
+int VariablesSingelton::locationOfE(string number) {
+    unsigned int i = 0;
+    for (; i < number.size(); ++i) {
+        //there is 'e' in number
+        if (number[i] == 'e') {
+            return i;
+        }
+    }
+    //there is no 'e' in number
+    return -1;
 }
 
 Var *VariablesSingelton::getVarFromMapOfVarRight(std::__cxx11::string nameOfVar) {
@@ -215,31 +269,41 @@ void VariablesSingelton::addToMapRightWithVarPointer(std::__cxx11::string nameOf
 }
 
 void VariablesSingelton::addToMapRightWithSim(std::__cxx11::string nameOfVar, std::__cxx11::string simAddress) {
+    //find address of the var we want to add to map right
     Var *addressOfVarWeAlreadyHave = this->mapOfSimToValue[simAddress];
     double valueOfVarWeAlreadyHave;
     if (addressOfVarWeAlreadyHave) {
         addToMapRightWithVarPointer(nameOfVar, addressOfVarWeAlreadyHave);
         valueOfVarWeAlreadyHave = (double) addressOfVarWeAlreadyHave->getValue();
+        //update the variable in interpreter
         setNewVariableToInterpreterWithStringDouble(nameOfVar, valueOfVarWeAlreadyHave);
     } else if (!doIHaveThisVarInMapRight(nameOfVar)) {
+        //default value=0
         Var *var = new Var(DEFAULT_INITIALIZATION_OF_DOUBLE_VALUE_IN_VAR_MAP_RIGHT, simAddress);
+        mtx.try_lock();
         this->mapOfVarRight[nameOfVar] = var;
+        mtx.unlock();
+        //update the variable in interpreter
         setNewVariableToInterpreterWithStringDouble(nameOfVar, 0);
     }
 }
 
 void VariablesSingelton::addToMapLeftWithSim(std::__cxx11::string nameOfVar, std::__cxx11::string simAddress) {
+    //find address of the var we want to add to map left
     Var *addressOfVarWeAlreadyHave = this->mapOfSimToValue[simAddress];
     double valueOfVarWeAlreadyHave;
     if (addressOfVarWeAlreadyHave) {
         addToMapLeftWithVarPointer(nameOfVar, addressOfVarWeAlreadyHave);
         valueOfVarWeAlreadyHave = (double) addressOfVarWeAlreadyHave->getValue();
+        //update the variable in interpreter
         setNewVariableToInterpreterWithStringDouble(nameOfVar, valueOfVarWeAlreadyHave);
     } else if (!doIHaveThisVarInMapLeft(nameOfVar)) {
+        //default value=0
         Var *var = new Var(DEFAULT_INITIALIZATION_OF_DOUBLE_VALUE_IN_VAR_MAP_RIGHT, simAddress);
         mtx.try_lock();
         this->mapOfVarLeft[nameOfVar] = var;
         mtx.unlock();
+        //update the variable in interpreter
         setNewVariableToInterpreterWithStringDouble(nameOfVar, 0);
     }
 }
@@ -273,6 +337,7 @@ double VariablesSingelton::getValueFromSetVariablesOfInterpreter(std::__cxx11::s
 }
 
 double VariablesSingelton::calculateStringInInterpret(std::__cxx11::string valueString) {
+    //the interpret function cant handle spaces, so we want to delete them
     valueString = deleteSpacesFromNewSetVariables(valueString);
     Expression* expression;
     double numberOfString;

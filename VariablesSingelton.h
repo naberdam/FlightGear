@@ -131,6 +131,8 @@ public:
     void printValuesInSim();
     string getMsgFromQueue();
     bool queueWithMsg();
+    int locationOfE(string number);
+    string changeStringToBeWithoutE(string number, int indexE);
 
 
     virtual ~VariablesSingelton();

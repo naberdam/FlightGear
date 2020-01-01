@@ -23,9 +23,12 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
             }
             line = deleteTabsFromTheBeginningOfTheLine(line);
             line = deleteSpacesFromTheBeginningOfTheLine(line);
+            //if there is 'var' in the beginning of the line
             if (isThereVarInStartOfLine(line)) {
+                //'var' with '='
                 if (isThereEqualSignInText(line)) {
                     addEqualSignToTheBegin(line, i);
+                    //'var' with '<-' '->'
                 } else {
                     posOfThisLine = line.find(delimiterOpenParenthesis);
                     tokenOfTextLeft = line.substr(0, posOfThisLine);
@@ -58,6 +61,7 @@ vector<vector<string>> ReadData::lexer(string nameOfFile) {
                     || this->vectorOfDataFromFile[i][0].compare("if") == 0) {
                     line = deleteSpacesBetweenExpressions(line);
                     orderByOperatorCondition(line, i);
+                    //it is function
                 } else {
                     line.erase(0, 1);
                     line.erase(line.size() - 1, line.size());
@@ -105,7 +109,6 @@ bool ReadData::isThereApostrophesInText(string text) {
 
 void ReadData::addArrowSignToTheBegin(std::__cxx11::string text, unsigned int index) {
     unsigned int i = 0;
-    //0string text
     string newSign = " ";
     string temp1, temp2, newText = "var";
     text.erase(0, 3);

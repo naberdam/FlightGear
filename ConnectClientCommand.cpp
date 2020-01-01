@@ -20,8 +20,8 @@ void connectSocketClient(vector<vector<string> > detailsOfTheCommand, unsigned i
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (client_socket == -1) {
         //error
-        /*std::cerr << "Could not create a socket" << std::endl;*/
-        throw "Could not create a socket";
+        std::cerr << "Could not create a socket" << std::endl;
+        exit(1);
     }
 
     //We need to create a sockaddr obj to hold address of server
@@ -37,11 +37,12 @@ void connectSocketClient(vector<vector<string> > detailsOfTheCommand, unsigned i
     // Requesting a connection with the server on local host with port 5402
     int is_connect = connect(client_socket, (struct sockaddr *) &address, sizeof(address));
     if (is_connect == -1) {
-        /*std::cerr << "Could not connect to host server" << std::endl;*/
-        throw "Could not connect to host server";
-    } else {
+        std::cerr << "Could not connect to host server" << std::endl;
+        exit(1);
+    }/* else {
         std::cout << "Client is now connected to server" << std::endl;
-    }
+    }*/
+
 }
 
 void sendMsgToClient() {
@@ -50,20 +51,20 @@ void sendMsgToClient() {
     VariablesSingelton *variablesSingelton = VariablesSingelton::getInstanceOfVariablesSingelton();
     bool weAreConnectingSocket;
     while (true) {
+        //check if we still connect to the game
         mtx.try_lock();
         weAreConnectingSocket = VariablesSingelton::getInstanceOfVariablesSingelton()->isConnectSocket();
         mtx.unlock();
         if (weAreConnectingSocket) {
+            //if we have messages to send to client
             if (variablesSingelton->queueWithMsg()) {
                 msgString = variablesSingelton->getMsgFromQueue();
                 msg = msgString.c_str();
                 int is_sent = send(client_socket, msg, strlen(msg), 0);
                 if (is_sent == -1) {
                     std::cout<<"Error sending message"<<std::endl;
-                } else {
-                    /*std::cout<<"Hello message sent to server" <<std::endl;
-                    std::cout<< msgString << std::endl;*/
                 }
+                //if we dont have messages to send then go to sleep
             } else {
                 this_thread::sleep_for(chrono::milliseconds(10));
             }
@@ -75,9 +76,11 @@ void sendMsgToClient() {
 }
 
 int ConnectClientCommand::execute(vector<vector<string> > &detailsOfTheCommand, unsigned int index) {
+    //thread to open socket
     thread t1(connectSocketClient, detailsOfTheCommand, index);
     t1.join();
     VariablesSingelton::getInstanceOfVariablesSingelton()->connectMe();
+    //thread for sending messages to client
     thread t2(sendMsgToClient);
     t2.detach();
     return ++index;
