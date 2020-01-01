@@ -9,7 +9,7 @@ At that time, we will act as a server that constantly updates the values of the 
 
 First of all, to use the program you need to install the Flight Gear simulator from the following link 
 and select the installation of the workspace you are using (Windows, Linux, etc.):
-[FlightGear]https://www.flightgear.org/download/main-program/
+https://www.flightgear.org/download/main-program/
 
 Then, in the additional settings you will need to write these lines:
 
