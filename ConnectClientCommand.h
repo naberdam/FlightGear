@@ -7,13 +7,11 @@
 
 #include "Command.h"
 
-
 class ConnectClientCommand : public Command {
 
-public:
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+ public:
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
 };
-
 
 #endif //EX3_CONNECTCLIENTCOMMAND_H

@@ -13,10 +13,9 @@ using namespace std;
 
 class ParserCommands {
 
-public:
-    ParserCommands();
-    void parser(vector<vector<string>> lexerVector);
+ public:
+  ParserCommands();
+  void parser(vector<vector<string>> lexerVector);
 };
-
 
 #endif //EX3_PARSERCOMMANDS_H

@@ -9,21 +9,20 @@
 
 using namespace std;
 class Var {
-private:
-    float value;
-    string sim;
-public:
+ private:
+  float value;
+  string sim;
+ public:
 
-    Var(float value1, const string &sim1);
+  Var(float value1, const string &sim1);
 
-    float getValue() const;
+  float getValue() const;
 
-    const string &getSim() const;
+  const string &getSim() const;
 
-    void setValue(double value1);
+  void setValue(double value1);
 
-    void setFloatValue(float value1);
+  void setFloatValue(float value1);
 };
-
 
 #endif //EX3_VAR_H

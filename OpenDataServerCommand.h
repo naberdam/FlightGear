@@ -12,15 +12,14 @@
 
 using namespace std;
 
-class OpenDataServerCommand : public Command{
-private:
-    vector<string> vectorOfNameValue;
-public:
-    OpenDataServerCommand();
+class OpenDataServerCommand : public Command {
+ private:
+  vector<string> vectorOfNameValue;
+ public:
+  OpenDataServerCommand();
 
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
 };
-
 
 #endif //EX3_OPENDATASERVERCOMMAND_H

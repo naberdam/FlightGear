@@ -8,10 +8,9 @@
 #include "Command.h"
 
 class PrintCommand : public Command {
-public:
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+ public:
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
 };
-
 
 #endif //EX3_PRINTCOMMAND_H

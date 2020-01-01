@@ -7,15 +7,12 @@
 
 #include "ConditionParser.h"
 
-
-
 class IfCommand : public ConditionParser {
 
-public:
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+ public:
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
-    IfCommand();
+  IfCommand();
 };
-
 
 #endif //EX3_IFCOMMAND_H

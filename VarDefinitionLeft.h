@@ -9,9 +9,8 @@
 
 class VarDefinitionLeft : public Command {
 
-public:
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+ public:
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 };
-
 
 #endif //EX3_VARDEFINITIONLEFT_H

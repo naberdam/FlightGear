@@ -7,18 +7,13 @@
 
 #define EX3_WHILECOMMAND_H
 
-
-
 class WhileCommand : public ConditionParser {
 
-public:
-    WhileCommand();
+ public:
+  WhileCommand();
 
-    virtual int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index);
-
-
+  virtual int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index);
 
 };
-
 
 #endif //EX3_WHILECOMMAND_H

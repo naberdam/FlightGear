@@ -8,32 +8,27 @@
 #include "ex1.h"
 #define EX3_CONDITIONPARSER_H
 
-
-
 class ConditionParser : public Command {
-protected:
-    Command* command;
+ protected:
+  Command *command;
 
-    bool checkCondition(vector<vector<string>> detailsOfTheCommand, unsigned int index);
-public:
-    ConditionParser();
+  bool checkCondition(vector<vector<string>> detailsOfTheCommand, unsigned int index);
+ public:
+  ConditionParser();
 
-    virtual int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) = 0;
-    bool isThisStringIsOperator(string operatorToCondition);
-    unsigned int findIndexOfOperator(vector<string> detailsOfCondition);
-    string unionAllStringsTillOperator(vector<string> detailsOfCondition, unsigned int indexOfOperator);
-    string unionAllStringsFromOperatorTillEnd(vector<string> detailsOfCondition, unsigned int indexOfOperator);
+  virtual int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) = 0;
+  bool isThisStringIsOperator(string operatorToCondition);
+  unsigned int findIndexOfOperator(vector<string> detailsOfCondition);
+  string unionAllStringsTillOperator(vector<string> detailsOfCondition, unsigned int indexOfOperator);
+  string unionAllStringsFromOperatorTillEnd(vector<string> detailsOfCondition, unsigned int indexOfOperator);
 
+  double interpretStringAndCalculateIt(string nameOfVar);
+  int increaseIndexByEnterConditionOrNot(bool didEnterTheLoop,
+                                         unsigned int index,
+                                         vector<vector<string>> &detailsOfTheCommand);
 
-    double interpretStringAndCalculateIt(string nameOfVar);
-
-    string deleteOpenParanthesis(string text);
-    int increaseIndexByEnterConditionOrNot(bool didEnterTheLoop, unsigned int index, vector<vector<string>> &detailsOfTheCommand);
-
-    virtual ~ConditionParser();
-
+  virtual ~ConditionParser();
 
 };
-
 
 #endif //EX3_CONDITIONPARSER_H

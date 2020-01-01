@@ -7,17 +7,15 @@
 
 #include "Command.h"
 
-
 class KnownFuncCommand : public Command {
-private:
-    vector<vector<string >> detailsOfFuncDeclaration;
+ private:
+  vector<vector<string >> detailsOfFuncDeclaration;
 
-public:
-    KnownFuncCommand(const vector<vector<string>> &detailsOfFuncDeclarationFromUnknownFunc);
+ public:
+  KnownFuncCommand(const vector<vector<string>> &detailsOfFuncDeclarationFromUnknownFunc);
 
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 
 };
-
 
 #endif //EX3_KNOWNFUNCCOMMAND_H

@@ -7,13 +7,10 @@
 
 #include "Command.h"
 
-
 class VarDefinitionRight : public Command {
 
-
-public:
-    int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
+ public:
+  int execute(vector<vector<string>> &detailsOfTheCommand, unsigned int index) override;
 };
-
 
 #endif //EX3_VARDEFINITIONRIGHT_H

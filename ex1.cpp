@@ -139,7 +139,7 @@ bool Interpreter::isLetter(string token) {
     //check other chars in token if they are legal
     for (int i = 1; i < (int) token.size(); i++) {
         if ((token[i] < 'a' || token[i] > 'z') && (token[i] < 'A' || token[i] > 'Z') && token[i] != '_' &&
-            (token[i] < '0' || token[i] > '9')) {
+                (token[i] < '0' || token[i] > '9')) {
             return false;
         }
     }
@@ -189,7 +189,6 @@ bool Interpreter::isLetterChar(char stringCheck) {
     //else = it is illegal
     return 0;
 }
-
 
 bool Interpreter::isNumberString(string number) {
     //this boolean tells us if we already have number and we can use '.'
@@ -297,8 +296,8 @@ string Interpreter::replaceAll(string *str, const string &from, const string &to
     size_t start_pos = 0;
     while ((start_pos = str->find(from, start_pos)) != string::npos) {
         if (isOperator((*str)[start_pos + from.length()])
-            || (*str)[start_pos + from.length()] == ')'
-            || (*str)[start_pos + from.length()] == '\0') {
+                || (*str)[start_pos + from.length()] == ')'
+                || (*str)[start_pos + from.length()] == '\0') {
             str->replace(start_pos, from.length(), to);
         }
         start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
@@ -351,6 +350,7 @@ Expression *Interpreter::interpret(string exp) {
                 number.clear();
                 isNumberOrNot = 0;
             } else {
+                //it is not a proper number
                 throw "the equation is not good";
             }
         }
@@ -416,7 +416,7 @@ Expression *Interpreter::interpret(string exp) {
                 while (priorityOfOperators(exp[i], topStackOperator) && !stackOperators.empty() && exp[i] != ')') {
                     queuePolish.push(stackOperators.top());
                     stackOperators.pop();
-                    if  (stackOperators.empty()) {
+                    if (stackOperators.empty()) {
                         break;
                     }
                     topStackOperator = stackOperators.top();
@@ -436,6 +436,7 @@ Expression *Interpreter::interpret(string exp) {
                 queuePolish.push(stackOperators.top());
                 stackOperators.pop();
             }
+            //we have in the top of the stack ')'
             stackOperators.pop();
             checkUminusOrMinus = exp[i];
             checkUplusOrPlus = exp[i];
@@ -453,7 +454,7 @@ Expression *Interpreter::interpret(string exp) {
     Value *valueQueue;
     while (!queuePolish.empty()) {
         while (!queuePolish.empty() && !isOperator(queuePolish.front())) {
-            //if we need to use firstTemp/queueUMinus
+            //if we need to use queueUMinus
             if (!strcmp(queuePolish.front().c_str(), "#")) {
                 stackExpressions.push(queueUMinus.front());
                 queueUMinus.pop();
@@ -463,12 +464,15 @@ Expression *Interpreter::interpret(string exp) {
             }
             queuePolish.pop();
         }
+        //start calculation of expressions
         if (!queuePolish.empty()) {
+            //right number in equation
             secondNumber = stackExpressions.top();
             stackExpressions.pop();
             if (stackExpressions.empty()) {
                 break;
             }
+            //left number in equation
             firstNumber = stackExpressions.top();
             stackExpressions.pop();
             //push new binary operator with two numbers and operator we got from queuePolish
@@ -509,11 +513,10 @@ bool Interpreter::checkProperParenthesis(string stringCheck) {
 
 }
 
-
 bool Interpreter::checkProperEquation(string charOfExpCheck, unsigned int i) {
     //not one of the correct possibilities to char in the expression
     if (!isNumberChar(charOfExpCheck[i]) && !isOperator(charOfExpCheck[i]) && charOfExpCheck[i] != '(' &&
-        charOfExpCheck[i] != ')') {
+            charOfExpCheck[i] != ')') {
         throw "the equation is not correct";
     }
     if (charOfExpCheck.size() > 1) {
@@ -555,26 +558,19 @@ Expression *Interpreter::binaryCalculate(Expression *firstExpression, Expression
     return calculation;
 }
 
-
-
 bool Interpreter::priorityOfOperators(char outStack, string inStack) {
     return ((outStack == '+' || outStack == '-') && (inStack == "*" || inStack == "/"))
-           || (outStack == '+' && inStack == "-")
-           || (outStack == '-' && inStack == "+");
+            || (outStack == '+' && inStack == "-")
+            || (outStack == '-' && inStack == "+");
 }
 
 bool Interpreter::isOperator(char character) {
     switch (character) {
-        case '-':
-            return 1;
-        case '/':
-            return 1;
-        case '+':
-            return 1;
-        case '*':
-            return 1;
-        default:
-            break;
+        case '-':return 1;
+        case '/':return 1;
+        case '+':return 1;
+        case '*':return 1;
+        default:break;
     }
     return 0;
 }
@@ -585,30 +581,18 @@ bool Interpreter::isOperator(string queueFront) {
 
 bool Interpreter::isNumberChar(char character) {
     switch (character) {
-        case '0':
-            return 1;
-        case '1':
-            return 1;
-        case '2':
-            return 1;
-        case '3':
-            return 1;
-        case '4':
-            return 1;
-        case '5':
-            return 1;
-        case '6':
-            return 1;
-        case '7':
-            return 1;
-        case '8':
-            return 1;
-        case '9':
-            return 1;
-        case '.':
-            return 1;
-        default:
-            break;
+        case '0':return 1;
+        case '1':return 1;
+        case '2':return 1;
+        case '3':return 1;
+        case '4':return 1;
+        case '5':return 1;
+        case '6':return 1;
+        case '7':return 1;
+        case '8':return 1;
+        case '9':return 1;
+        case '.':return 1;
+        default:break;
     }
     return 0;
 }

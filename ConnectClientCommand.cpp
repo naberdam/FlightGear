@@ -14,7 +14,6 @@
 static int client_socket;
 extern mutex mtx;
 
-
 void connectSocketClient(vector<vector<string> > detailsOfTheCommand, unsigned int index) {
     //create socket
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -29,7 +28,8 @@ void connectSocketClient(vector<vector<string> > detailsOfTheCommand, unsigned i
     address.sin_family = AF_INET;//IP4
     string ipClient = detailsOfTheCommand[index][1];
     address.sin_addr.s_addr = inet_addr(ipClient.c_str());  //the localhost address
-    int portOfClient = (int) VariablesSingelton::getInstanceOfVariablesSingelton()->calculateStringInInterpret(detailsOfTheCommand[index][2]);
+    int portOfClient =
+            (int) VariablesSingelton::getInstanceOfVariablesSingelton()->calculateStringInInterpret(detailsOfTheCommand[index][2]);
     address.sin_port = htons(portOfClient);
     //we need to convert our number (both port & localhost)
     // to a number that the network understands.
@@ -62,7 +62,7 @@ void sendMsgToClient() {
                 msg = msgString.c_str();
                 int is_sent = send(client_socket, msg, strlen(msg), 0);
                 if (is_sent == -1) {
-                    std::cout<<"Error sending message"<<std::endl;
+                    std::cout << "Error sending message" << std::endl;
                 }
                 //if we dont have messages to send then go to sleep
             } else {
