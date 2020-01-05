@@ -39,6 +39,7 @@ class ReadData {
   bool isThereVarInStartOfLine(string text);
   unsigned int countSpacesInText(string text);
   string deleteWordWhileOrIf(string text, vector<string> &vectOfSpecialParenthesis);
+  string deleteFirstOpenParenthesisOrLastCloseParenthesis(string text);
 
   virtual ~ReadData();
 

@@ -22,6 +22,7 @@ class ConditionParser : public Command {
   string unionAllStringsTillOperator(vector<string> detailsOfCondition, unsigned int indexOfOperator);
   string unionAllStringsFromOperatorTillEnd(vector<string> detailsOfCondition, unsigned int indexOfOperator);
 
+
   double interpretStringAndCalculateIt(string nameOfVar);
   int increaseIndexByEnterConditionOrNot(bool didEnterTheLoop,
                                          unsigned int index,

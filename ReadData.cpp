@@ -171,73 +171,103 @@ bool ReadData::isThereVarInStartOfLine(std::__cxx11::string text) {
   return 0;
 }
 
+string ReadData::deleteFirstOpenParenthesisOrLastCloseParenthesis(string text) {
+  unsigned int i = 0;
+  int countOpenParenthesis = 0, countCloseParenthesis = 0;
+  for (; i < text.size(); ++i) {
+    if (text[i] == '(') {
+      ++countOpenParenthesis;
+    } else if (text[i] == ')') {
+      ++countCloseParenthesis;
+    }
+  }
+  if (countOpenParenthesis > countCloseParenthesis) {
+    text = text.substr(1);
+  } else if (countCloseParenthesis > countOpenParenthesis) {
+    text = text.substr(0, text.size() - 1);
+  }
+  return text;
+}
+
 void ReadData::orderByOperatorCondition(string text, unsigned int index) {
   unsigned int i = 0;
   for (; i < text.size(); i++) {
     //handle text with the operator <=
     if (text[i] == '<' && text[i + 1] == '=') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back("<=");
       //erase all chars till operator
       text.erase(0, i + 2);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
     //handle text with the operator >=
     if (text[i] == '>' && text[i + 1] == '=') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back(">=");
       //erase all chars till operator
       text.erase(0, i + 2);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
     //handle text with the operator !=
     if (text[i] == '!' && text[i + 1] == '=') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back("!=");
       //erase all chars till operator
       text.erase(0, i + 2);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
     //handle text with the operator ==
     if (text[i] == '=' && text[i + 1] == '=') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back("==");
       //erase all chars till operator
       text.erase(0, i + 2);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
     //handle text with the operator <
     if (text[i] == '<') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back("<");
       //erase all chars till operator
       text.erase(0, i + 1);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
     //handle text with the operator >
     if (text[i] == '>') {
       //left condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text.substr(0, i)));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text.substr(0, i))));
       this->vectorOfDataFromFile[index].push_back(">");
       //erase all chars till operator
       text.erase(0, i + 1);
       //right condition
-      this->vectorOfDataFromFile[index].push_back(deleteSpacesBetweenExpressions(text));
+      this->vectorOfDataFromFile[index].push_back(deleteFirstOpenParenthesisOrLastCloseParenthesis(
+          deleteSpacesBetweenExpressions(text)));
       break;
     }
   }
