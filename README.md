@@ -1,4 +1,4 @@
-# ex3
+# FlightGear
 
 This program sends a collection of commands to the provided simulator called Flight Gear 
 and these commands cause the aircraft to fly. The purpose of the program is to be as both client and server. 
