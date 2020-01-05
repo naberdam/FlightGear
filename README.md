@@ -29,7 +29,7 @@ Clion - Ide by JetBtrains
 
 **Versioning**
 
-We used [Github](https://github.com/naberdam/ex3) for version control
+We used [Github](https://github.com/naberdam/FlightGear) for version control
 
 **Authors**
 
